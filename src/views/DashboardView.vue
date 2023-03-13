@@ -141,21 +141,4 @@ const filterByStatus = async (param) => {
   table, th, td {
     border: none;
   }
-
-
-.button-like-div {
-  display: inline-block;
-  padding: 0.5em 1em;
-  background-color: #0F1726;
-  color: #fff;
-  font-size: 1em;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.button-like-div:hover {
-  background-color: rgb(0, 110, 255) !important;
-}
 </style>
