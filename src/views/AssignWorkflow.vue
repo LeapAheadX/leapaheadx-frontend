@@ -1,5 +1,5 @@
 <template>
-    <div class="rounded-4 p-4 mt-4 my-overlay" style="background-color: #0F1726;">
+    <div class="rounded-4 p-4 mt-4 my-overlay" style="background-color: #0F1726; ">
         <div class="row justify-content-between mb-4">
             <h6 class="col-6">Workflow Assignment</h6>
             <button @click="closeForm" type="button" class="col-2 btn btn-danger">Close</button>
@@ -24,10 +24,10 @@
                 <h7 > Select a Vendor to be assigned </h7>
                 <div >
                     <div class="input-group my-4">
-                        <input @keyup="vendor_checktext()" class=" form-control" type="text" v-model="vendor_uuid" placeholder="Search by Workflow ID">
+                        <input @keyup="vendor_checktext()" class=" form-control" type="text" v-model="vendor_uuid" placeholder="Search by Vendor ID">
                     </div>
                     <div class="input-group">
-                        <input @keyup="vendor_checktext()" class=" form-control" type="text" v-model="vendor_searchQuery" placeholder="Search by Workflow Name">
+                        <input @keyup="vendor_checktext()" class=" form-control" type="text" v-model="vendor_searchQuery" placeholder="Search by Vendor Name">
                         <button @click="vendor_displayform=!vendor_displayform" class="btn btn-light p-1" ><img  src="../assets/images/dropdownIcon.png" height="25"></button>
                     </div>
                     <ul  v-if = " vendor_displayform || (vendor_filteredItems.length!=0 && vendor_searchQuery!='' && vendor_searchQuery!=vendor_selectValue)" class="bg-white text-dark no-bullets rounded-bottom">
@@ -35,8 +35,12 @@
                     </ul>
                 </div>
             </div>
-            <p v-if ="showMessage" :class="textColor" class="text-center mt-2"> {{ message }}</p>
-            
+
+                <div class=" messageStatus d-flex flex-column justify-content-center ">
+                    <p v-if ="showMessage" :class="textColor" class="text-center mt-2"> {{ message }}</p>
+                    <button @click="assignFormVendor"  type =" button" class="btn " :class="!canAssign? '' :'btn-success' " :disabled="!canAssign" >{{ assignBtnVal }}</button>
+                </div>
+    
         </div>
     </div>
 
@@ -63,12 +67,77 @@ const showMessage = ref(false);
 const textColor = ref('');
 const formData = ref([]);
 const vendorData = ref([]);
+const assignBtnVal = ref('Please assign a form to a vendor')
+
+
+
+onMounted(async () => {
+  const response = await axios.get('http://localhost:8080/api/formWorkflows');
+  formData.value = response.data;
+
+  const responsevendor = await axios.get('http://localhost:8080/api/vendors');
+  vendorData.value = responsevendor.data;
+
+});
+
+
+
+const canAssign = computed(()=>{
+    if (vendor_searchQuery.value != '' && vendor_uuid.value != '' &&  uuid.value != '' && searchQuery.value !=''){
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        assignBtnVal.value = 'Assign';
+        return true;
+    }else{
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        assignBtnVal.value = 'Please assign a form to a vendor';
+        return false;
+    }
+})
+
+const assignFormVendor = async () => {
+    console.log(searchQuery.value)
+  const postdata =    {
+        "status": "NotStarted",
+        "comment": "this need to be done asap",
+        "company": vendor_searchQuery.value,
+        "formName": searchQuery.value,
+        "currentStepNo": 1
+    }
+  try {
+    // eslint-disable-next-line no-unused-vars
+    const response = await axios.post('http://localhost:8080/api/applications', postdata)
+        message.value = "Successful Assigned!"
+        textColor.value ="text-success"
+        selectValue.value = '';
+        searchQuery.value='';
+        uuid.value='';
+        vendor_selectValue.value = '';
+        vendor_searchQuery.value='';
+        vendor_uuid.value ='';
+        setTimeout(() => {
+        showMessage.value = false;
+        message.value = '';
+        }, 5000);
+
+   
+  } catch (error) {
+        message.value = "Error with assignment!"
+        textColor.value ="text-danger"
+        setTimeout(() => {
+        showMessage.value = false;
+        message.value = '';
+        }, 5000);
+  }
+}
+
+
+
+// Form --------------------------------------------------------------------------------------------------------------
 
 function checktext(){
     if (searchQuery.value != selectValue.value){
         uuid.value ='';
         selectValue.value = '';
-    
     }
     else if(checkformid(uuid.value) && uuid.value != ""){
         selectValue.value = '';
@@ -137,6 +206,7 @@ const filteredItems = computed(() => {
     return item.name.toLowerCase().includes(searchQuery.value.toLowerCase());
   });
 });
+// End Form --------------------------------------------------------------------------------------------------------------
 
 // Vendor ------------------------------------------------------------------------------------------------------------------------
 const vendor_uuid = ref('');
@@ -186,7 +256,6 @@ function vendor_selectItem(item) {
         showMessage.value = false;
         message.value = '';
         }, 5000);
-
 }
 
 function vendor_checkformid(inuuid){
@@ -217,19 +286,15 @@ const vendor_filteredItems = computed(() => {
   });
 });
 
-onMounted(async () => {
-  const response = await axios.get('http://localhost:8080/api/formWorkflows');
-  formData.value = response.data;
+// End Vendor ----------------------------------------------------------------------------------------------------------------
 
-  const responsevendor = await axios.get('http://localhost:8080/api/vendors');
-  vendorData.value = responsevendor.data;
 
-});
 
 </script>
 
 <style>
 .my-overlay {
+
   position: fixed;
   top: 50%;
   left: 50%;
@@ -249,7 +314,24 @@ ul.no-bullets{
     list-style: none;
 }
 ul{
-    height: 150px; overflow-y: scroll;
+
+
+    height: 150px; 
+    overflow-y: scroll;
+
+
 }
+.messageStatus{
+    position: fixed;
+    bottom: 10%;
+    left: 0;
+    max-width: 100%;
+    z-index: -1;
+
+    
+
+}
+
+
 
 </style>

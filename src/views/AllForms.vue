@@ -66,7 +66,8 @@ onMounted(async () => {
   table, th, td {
     border: none;
   }
-  .overlay {
+  .overlay {   
+
     position: absolute;
     top:0;
     left:0;
