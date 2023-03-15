@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import FormView from '../views/FormView.vue'
-import Try from '../views/TRy.vue'
+import AdminDashboard from '../views/DashboardView.vue'
+import SubFormDashboard from '../views/SubFormDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,18 +18,16 @@ const router = createRouter({
       component: FormView
     },
     {
-      path: '/try',
-      name: 'try',
-      component: Try
+      path: '/adminDashboard',
+      name: 'adminDashboard',
+      component: AdminDashboard
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
+      path: '/subFormDashboard',
+      name: 'subFormDashboard',
+      component: SubFormDashboard
+    }
+    
     {
       path: '/workflow',
       name: 'workflow',
