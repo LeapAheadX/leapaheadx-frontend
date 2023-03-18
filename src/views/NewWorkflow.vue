@@ -30,9 +30,9 @@
                         </div>
                         <div class="col rounded p-3" style="background-color: #1A263C;" @dragover.prevent @drop="onDrop($event, index)">
                             <h5 v-if="step.droppedItems.length == 0" class="text-secondary" >Start by dragging here</h5>
-                            <div v-for="item in step.droppedItems" :key="item.canvasUuid" style="background-color: #707279;" class="col rounded py-3 m-2 text-center">
+                            <div v-for="item, itemIndex in step.droppedItems" :key="item.canvasUuid" style="background-color: #707279;" class="col rounded py-3 m-2 text-center">
                                 {{ item.name }}<br>
-                                <button type="button" class="btn btn-danger" @click="step.droppedItems.splice(index, 1)">remove</button>
+                                <button type="button" class="btn btn-danger" @click="removeDroppedItem(index,itemIndex)">remove</button>
                             </div>
                         </div>
                     </div>
@@ -70,6 +70,10 @@ const steps = ref([]);
 
 function onDragStart(canvasUuid) {
   event.dataTransfer.setData('text/plain', canvasUuid);
+}
+
+function removeDroppedItem(stepIndex, itemIndex) {
+    steps.value[stepIndex].droppedItems.splice(itemIndex, 1);
 }
 
 function onDrop(event, index) {
