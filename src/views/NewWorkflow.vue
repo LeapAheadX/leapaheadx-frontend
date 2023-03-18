@@ -14,9 +14,9 @@
                         <button type="button" class="btn btn-light" @click="addStepcomponent()">Add Step</button>
                     </div>
                     
-                    <div v-for="(step, index) in steps" :key="index" class="my-4">
+                    <div v-for="(step, index) in steps" :key="index" class="my-3">
                         <div class="d-flex justify-content-between">   
-                            Step {{ step.orderNo}}
+                            Step {{ index + 1}}
                             <select v-model="step.assigneeType">
                                 <option value="admin">admin</option>
                                 <option value="vendor">vendor</option>
@@ -28,13 +28,23 @@
                             </select>
          
                         </div>
-                        <div class="col rounded p-3" style="background-color: #1A263C;" @dragover.prevent @drop="onDrop($event, index)">
+                        <div class="col rounded p-3" style="background-color: #1A263C;" @dragover.prevent @drop="onDrop($event, index)" >
                             <h5 v-if="step.droppedItems.length == 0" class="text-secondary" >Start by dragging here</h5>
-                            <div v-for="item, itemIndex in step.droppedItems" :key="item.canvasUuid" style="background-color: #707279;" class="col rounded py-3 m-2 text-center">
-                                {{ item.name }}<br>
+                            <div v-for="item, itemIndex in step.droppedItems" :key="item.canvasUuid" class="col rounded py-3 m-2 text-center row" :style="{ backgroundColor: item.flash == itemIndex+item.name+index  ? '#307279' : '#707279' }">
+                                <div class='col-10 ps-5'>
+                              
+                                {{ itemIndex+item.name+index }}<br>
                                 <button type="button" class="btn btn-danger" @click="removeDroppedItem(index,itemIndex)">remove</button>
+                                </div>
+                                <div class='col-2 '>
+                                    <button v-if ="itemIndex!=0" type="button" class="btn btn-light mb-1" @click="moveStepUp(index,itemIndex)">▲</button>
+                                    <div  v-if ="itemIndex==0" class="p-3"></div>
+                                    <button v-if ="itemIndex!= step.droppedItems.length-1" type="button" class="btn btn-light" @click="moveStepDown(index,itemIndex)">▼</button>
+                                </div>
                             </div>
+                            <button type="button" class="btn btn-danger" @click="removeStep(index)">Remove step</button>
                         </div>
+                      
                     </div>
                 </div>
             </div>
@@ -72,6 +82,38 @@ function onDragStart(canvasUuid) {
   event.dataTransfer.setData('text/plain', canvasUuid);
 }
 
+function moveStepUp(stepIndex, itemIndex) {
+  if (itemIndex > 0) {
+
+    const temp =  steps.value[stepIndex].droppedItems[itemIndex];
+    steps.value[stepIndex].droppedItems[itemIndex] = steps.value[stepIndex].droppedItems[itemIndex-1];
+    steps.value[stepIndex].droppedItems[itemIndex-1] = temp;
+
+    steps.value[stepIndex].droppedItems[itemIndex-1].flash = itemIndex-1+steps.value[stepIndex].droppedItems[itemIndex-1].name+stepIndex;
+        setTimeout(() => {
+            steps.value[stepIndex].droppedItems[itemIndex-1].flash =  false;
+        }, 500);
+
+  }
+}
+
+function moveStepDown(stepIndex, itemIndex) {
+  if (itemIndex < steps.value[stepIndex].droppedItems.length - 1) {
+    const temp = steps.value[stepIndex].droppedItems[itemIndex];
+    steps.value[stepIndex].droppedItems[itemIndex] = steps.value[stepIndex].droppedItems[itemIndex+1];
+    steps.value[stepIndex].droppedItems[itemIndex+1] = temp;
+    steps.value[stepIndex].droppedItems[itemIndex+1].flash = itemIndex+1+steps.value[stepIndex].droppedItems[itemIndex+1].name+stepIndex;
+        setTimeout(() => {
+            steps.value[stepIndex].droppedItems[itemIndex+1].flash =  false;
+        }, 500);
+
+  }
+}
+
+function removeStep(stepIndex) {
+    steps.value.splice(stepIndex, 1);
+}
+
 function removeDroppedItem(stepIndex, itemIndex) {
     steps.value[stepIndex].droppedItems.splice(itemIndex, 1);
 }
@@ -88,7 +130,7 @@ function addStepcomponent() {
     const newStep = { 
         // formUuid : `${formUuid}`, 
         assigneeType: "", 
-        orderNo: `${steps.value.length + 1}`, 
+        orderNo: "", 
         action:"",
         droppedItems:[], 
     };
@@ -113,7 +155,7 @@ const save = async () => {
         console.log(element.assigneeType,element.orderNo,element.action,formUuid)
         const poststep = {
             "assigneeType": element.assigneeType,
-            "orderNo": element.orderNo,
+            "orderNo": index+1,
             "action": element.action,
             "parentForm": formUuid
         }
@@ -153,71 +195,6 @@ const save = async () => {
 
     }
 
-
-
-    // for (let index = 0; index < steps.value.length; index++) {
-    //     const element = steps.value[index];
-    //     console.log(element)
-    //     const poststep = {
-    //         "assigneeType": element.assigneeType,
-    //         "orderNo": element.orderNo,
-    //         "action": element.action,
-    //         "parentForm": formUuid
-    //     }
-    //     try {
-    //         // eslint-disable-next-line no-unused-vars
-    //         const response = await axios.post(' http://localhost:8080/api/formSteps', poststep)
-    //         const stepUuid = response.data;
-    //         for (let index = 0; index < element.droppedItems; index++) {
-    //             const element = element.droppedItems[index];
-    //             const associatedSubformData = {
-    //                 "stepUuid": stepUuid,
-    //                 "canvasUuid": element.canvasUuid,
-    //                 "position": index+1,
-    //             }
-    //             try {
-    //         // eslint-disable-next-line no-unused-vars
-    //                 const response = await axios.post(' http://localhost:8080/api/formSteps', associatedSubformData)
-    //             } catch (error) {
-    //                 console.log(error)
-    //             }    
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-            
-    // }
-    // console.log(searchQuery.value)
-    // const postdata = {
-    //     status: 'NotStarted',
-    //     comment: 'this need to be done asap',
-    //     company: vendor_searchQuery.value,
-    //     formName: searchQuery.value,
-    //     currentStepNo: 1
-    // }
-    // try {
-    //     // eslint-disable-next-line no-unused-vars
-    //     const response = await axios.post('http://localhost:8080/api/applications', postdata)
-    //     message.value = 'Successful Assigned!'
-    //     textColor.value = 'text-success'
-    //     selectValue.value = ''
-    //     searchQuery.value = ''
-    //     uuid.value = ''
-    //     vendor_selectValue.value = ''
-    //     vendor_searchQuery.value = ''
-    //     vendor_uuid.value = ''
-    //     setTimeout(() => {
-    //         showMessage.value = false
-    //         message.value = ''
-    //     }, 5000)
-    // } catch (error) {
-    //     message.value = 'Error with assignment!'
-    //     textColor.value = 'text-danger'
-    //     setTimeout(() => {
-    //         showMessage.value = false
-    //         message.value = ''
-    //     }, 5000)
-    // }
 }
 
 onMounted(async () => {
@@ -228,72 +205,8 @@ onMounted(async () => {
 
 <style>
 
+
 </style>
 
 
-                <!-- <div class="col rounded py-3" style="background-color: #1A263C;" @dragover.prevent @drop="onDrop">
-                    <h1>drop here</h1>
-                        <div v-for="item in droppedItems" :key="item.canvasUuid">
-                            {{ item.name }}
-                    </div>
-                </div> -->
-
-       <!-- <div class="row">
-            <div class="rounded-4 p-3 mt-4 col-6" style="background-color: #0f1726; ">
-                <div class="row">
-                    <div class="col-10">
-                        <textarea  v-model="workflowname" class="form-control" aria-label="With textarea" placeholder="Name a workflow..."></textarea>
-                    </div>
-                    <div class="col-2 d-flex flex-column">
-                        <button type="button" class="btn btn-light">Create</button>
-                        <br>
-                        <button type="button" class="btn btn-light" @click="addStepcomponent()">Add</button>
-                    </div>
-
-
-
-                    <div v-for="(step, index) in steps" :key="index">
-                        <div>   
-                            Step {{ step.orderNo}}
-                            <select v-model="step.assigneeType">
-                                <option value="admin">admin</option>
-                                <option value="vendor">vendor</option>
-                            </select>
-                            <select v-model="step.action">
-                                <option value="Fill Up">Fill Up</option>
-                                <option value="Check and Fill Up">Check and Fill Up</option>
-                                <option value="Check and Approve">Check and Approve</option>
-                            </select>
          
-                        </div>
-                        <div class="col rounded py-3" style="background-color: #1A263C;">
-                            <h1>hello</h1>
-                        </div>
-                        
-                   
-                    </div>
-                </div>
-
-
-
-                
-            </div>
-            
-            <div class="col-1" >
-                
-            </div>
-
-            <div class="rounded-4 p-5 mt-4 col-5" style="background-color: #0f1726;">
-                <div class="row">
-                    <h6 class="col">All Form components</h6>
-                    <button type="button" class="btn btn-light col-2">Create</button>
-                </div>
-
-                <div  v-for="item in subformcanvasData" :key="item.canvasUuid" class="row mt-3 text-center " >
-                    <div class="col rounded py-3" style="background-color: #707279;">
-                        {{ item.name }} <br>
-                        <button @click="addtostep(item.canvasUuid)" type="button" class="btn btn-light col-2 mt-2">Add</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
