@@ -33,7 +33,7 @@
                             <div v-for="item, itemIndex in step.droppedItems" :key="item.canvasUuid" class="col rounded py-3 m-2 text-center row" :style="{ backgroundColor: item.flash == itemIndex+item.name+index  ? '#307279' : '#707279' }">
                                 <div class='col-10 ps-5'>
                               
-                                {{ itemIndex+item.name+index }}<br>
+                                {{ item.name }}<br>
                                 <button type="button" class="btn btn-danger" @click="removeDroppedItem(index,itemIndex)">remove</button>
                                 </div>
                                 <div class='col-2 '>
@@ -139,7 +139,48 @@ function addStepcomponent() {
 
 
 
-const save = async () => {
+function save() {
+  let isValid = true;
+  var message = '';
+
+  // Check if workflowname is not empty
+  if (workflowname.value.trim() === "") {
+    message = "Workflow name is required";
+    isValid = false;
+  } else {
+    // Check if each step has valid assigneeType and action values,
+    // and if droppedItems array is not empty
+    if (steps.value.length == 0){
+        isValid = false;
+        message = "Workflow required to have atleast one step";
+
+    }
+    steps.value.forEach((step) => {
+        if (step.assigneeType === "" || step.action === "" || step.droppedItems.length === 0) {
+        isValid = false;
+        message = "Please fill all required fields and add at least one form component to each step";
+        }
+    });
+
+
+
+  }
+  if (isValid) {
+        // Perform save operation
+        saving()
+       
+    } else {
+        // Show validation error message
+        alert(message);
+    }
+
+
+}
+
+const saving = async () => {
+   
+
+
     const workflowdata = {
         "name": workflowname.value,
         "description": "this is the process of getting bto",
@@ -164,7 +205,7 @@ const save = async () => {
             const response = await axios.post(' http://localhost:8080/api/formSteps', poststep)
             const stepUuid = response.data;
             console.log("stepuuid", stepUuid)
-
+            
             for (let index = 0; index < element.droppedItems.length; index++) {
                 const item = element.droppedItems[index];
                 console.log( item.canvasUuid)
@@ -187,11 +228,12 @@ const save = async () => {
             console.log(error)
             console.log("2 formstep failed")
         }
+        alert("Sucessfully added workflow");
             
     }
 
     }catch (error){
-        console.log("1 workflow failed")
+        alert("Workflow name is taken")
 
     }
 
