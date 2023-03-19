@@ -11,14 +11,28 @@
         </div>
     </div>
 
+    <div v-if="isAssign" class="overlay">
+        <AssignWorkflow @is-close="() => (isAssign = !isAssign)" />
+    </div>
+
     <div class="row mx-2 mx-sm-5 pad-d">
         <div class="col dark-container pb-5">
+            <!-- This is the Title + Btns -->
             <div class="row mx-sm-2 mx-lg-5">
-                <div class="col-sm-7 col-lg-9 pad-e"><h5>All Form Components</h5></div>
-                <div class="col-sm-5 col-lg-3 col-xl-2 pt-3 pt-sm-4">
-                    <!-- New Sub Form -->
-                    <router-link to="/subFormBuilder">
-                        <button class="blue-button">New</button>
+                <div class="col col-lg-5 pad-e"><h5>All Form/Workflow Templates</h5></div>
+                <div class="col-lg-1 col-xl-2" />
+
+                <div class="col-6 col-lg-3 col-xl-2 pt-3 pt-sm-4">
+                    <!-- New Assignment -->
+                    <button class="light-button" @click="() => (isAssign = !isAssign)">
+                        Assign
+                    </button>
+                </div>
+
+                <div class="col-6 col-lg-3 col-xl-2 pt-3 pt-sm-4">
+                    <!-- New Workflow -->
+                    <router-link to="/newWorkflow">
+                        <button class="blue-button">New Flow</button>
                     </router-link>
                 </div>
                 <div class="d-none d-xl-block col-xl-1"></div>
@@ -35,13 +49,13 @@
             <!-- This is the For-loop of all the records-->
             <div
                 v-for="item in data"
-                :key="item.canvasUuid"
+                :key="item.id"
                 class="row tableRow justify-content-center align-items-center mx-sm-2 mx-lg-5 pad-e"
             >
                 <div class="col-sm-8 col-lg-6">
                     <div class="row justify-content-center align-items-center">
                         <div class="col-12">{{ item.name }}</div>
-                        <div class="col-12 tableCaption">{{ item.canvasUuid }}</div>
+                        <div class="col-12 tableCaption">{{ item.formUuid }}</div>
                     </div>
                 </div>
                 <div class="col-sm-4 col-lg-3">
@@ -85,12 +99,14 @@
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
+import AssignWorkflow from './AssignWorkflow.vue'
 
 const data = ref([])
+const isAssign = ref(false)
+// const newEntryId = ref(null);
 
 onMounted(async () => {
-    // Retrieve all sub-form canvas from the database
-    const response = await axios.get('http://localhost:8080/api/subformcanvas')
+    const response = await axios.get('http://localhost:8080/api/formWorkflows')
     data.value = response.data
 })
 </script>
@@ -100,5 +116,14 @@ table,
 th,
 td {
     border: none;
+}
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.3); /* add tint as background */
+    z-index: 1; /* make sure it's on top of other elements */
 }
 </style>

@@ -21,7 +21,7 @@
         </div>
         <div class="py-3 py-sm-0 col-sm-6 col-lg-6 col-xl-3">
             <div class="button-like-div py-4" @click="filterByStatus('Pending')">
-                <h4>In Progress</h4>
+                <h4>Pending</h4>
                 <h2 class="pad-c">{{ pending }}</h2>
             </div>
         </div>
@@ -52,7 +52,7 @@
             </div>
 
             <!-- This is the Header Row -->
-            <div class="row mx-0mx-sm-2 mx-lg-5 pad-d">
+            <div class="row mx-0 mx-sm-2 mx-lg-5 pad-d">
                 <div class="col-6 col-sm-8 col-lg-7 tableHeader">Name</div>
                 <div class="d-none d-sm-block col-sm-4 col-lg-2 tableHeader">Status</div>
                 <div class="d-none d-xl-block col-xl-1" />
@@ -93,7 +93,7 @@
                     </router-link>
 
                     <router-link to="/">
-                        <button class="btn-bg-primary mx-2">
+                        <button class="btn-bg-outline mx-2">
                             <!-- Delete Icon -->
                             <img
                                 src="../assets/icons/delete-outline.svg"
@@ -163,7 +163,7 @@
                     </router-link>
 
                     <router-link to="/">
-                        <button class="btn-bg-primary mx-2">
+                        <button class="btn-bg-outline mx-2">
                             <!-- Delete Icon -->
                             <img
                                 src="../assets/icons/delete-outline.svg"
