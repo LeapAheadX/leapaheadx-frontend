@@ -1,84 +1,85 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import TopNav from './components/TopNav.vue'
-import SideNav from './components/SideNav.vue'
+import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-    <header>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-        <!-- * Navigation Bar -->
-        <div class="row g-0">
-            <div class="col-sm-1 col-xxl-1" />
-            <div class="col-sm-10 col-xxl-10">
-                <TopNav />
-            </div>
-            <div class="col-sm-1 col-xxl-1" />
-        </div>
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
 
-        <!-- !TODO - Remove before moving to PRODUCTION -->
-        <nav>
-            <RouterLink to="/">Home</RouterLink>
-            &nbsp;
-            <RouterLink to="/adminDashboard">Admin Dashboard</RouterLink>
-            &nbsp;
-            <RouterLink to="/subFormDashboard">SubForm Dashboard</RouterLink>
-            &nbsp;
-            <RouterLink to="/workFlowDashboard">All Workflow/Forms</RouterLink>
-            &nbsp;
-            <RouterLink to="/formRender">Form Render</RouterLink>
-        </nav>
-    </header>
-
-    <!-- * Body Grid -->
-    <div class="row g-2 px-0">
-        <div class="col-2 col-lg-2 col-xl-1" :class="{ 'class-1': class1, 'class-2': class2 }">
-            <SideNav />
-        </div>
-        <div class="d-none d-xxl-block col-xxl-1" style="background-color: #142442" />
-        <div class="col col-lg col-xl col-xxl right-section" style="min-height: 100vh">
-            <RouterView />
-        </div>
-        <div class="d-none d-xxl-block col-xxl-1" style="background-color: #142442" />
-        <div class="fix-close">
-            <button class="test" @click="toggleHidden()">
-                <img v-if="class1" src="./assets/icons/menu.svg" height="40" width="40" alt="" />
-                <img v-else src="./assets/icons/close.svg" height="40" width="40" alt="" />
-            </button>
-        </div>
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
     </div>
+  </header>
+
+  <RouterView />
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            class1: false,
-            class2: true
-        }
-    },
-    methods: {
-        toggleHidden() {
-            this.class1 = !this.class1
-            this.class2 = !this.class2
-        }
-    }
-}
-</script>
-
-<style>
-.class-1 {
-    display: none;
+<style scoped>
+header {
+  line-height: 1.5;
+  max-height: 100vh;
 }
 
-.class-2 {
-    display: block;
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
 }
 </style>
